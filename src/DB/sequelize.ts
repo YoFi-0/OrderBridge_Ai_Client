@@ -15,7 +15,7 @@ const Product = sequelize.define("product_test", {
     },
     // --- تأكد من إضافة هذا الحقل الجديد ---
     productCode: {
-      type: DataTypes.INTEGER, // أو STRING إذا كنت تفضل
+      type: DataTypes.STRING, // أو STRING إذا كنت تفضل
       allowNull: false,
       unique: true // لضمان عدم تكرار الرقم في قاعدة البيانات
     },
@@ -80,7 +80,7 @@ try {
       fakeProducts.push({
         name: name,
         // رقم خاص عشوائي للمنتج
-        productCode: uniqueCode, 
+        productCode: `${uniqueCode}`, 
         // سعر عشوائي بين 50 و 1500
         price: parseFloat((Math.random() * 1500 + 50).toFixed(2)), 
         category: category,

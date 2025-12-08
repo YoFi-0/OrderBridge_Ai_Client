@@ -47,11 +47,21 @@ export async function syncTable(tableName = INDEX_NAME, primaryKey = "id", dlayM
 /**
  * دالة البحث في المنتجات
  */
+const IGNORED_WORDS = ["عندكم", "موجود", "فيه", "ابغى", "بكم", "هل", "؟", "لو", "سمحت", "متوفر؟", "موجود؟"];
 export const searchProduct = async (query) => {
     try {
+        console.log(`🔍 Searching for products with query: "${query}"`);
+        // 1. تنظيف الجملة قبل البحث
+        const cleanQuery = query
+            .split(' ')
+            .filter(word => !IGNORED_WORDS.includes(word))
+            .join(' ');
+        // إذا أصبحت الجملة فارغة بعد التنظيف، نستخدم الجملة الأصلية
+        const finalQuery = cleanQuery.trim() ? cleanQuery : query;
         const index = meiliClient.index(INDEX_NAME);
-        const searchResults = await index.search(query, {
+        const searchResults = await index.search(finalQuery, {
             limit: 1,
+            // attributesToHighlight: ['*'] // خيار مفيد للتصحيح
             attributesToSearchOn: ['name', 'productCode']
         });
         return searchResults.hits;

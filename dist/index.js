@@ -15,6 +15,7 @@ const whatsAppPhoneNumberId = process.env.WHATS_APP_PHONE_NUMBER_ID;
 const whatsAppVerifyToken = process.env.VERIFY_TOKEN;
 const whatsAppKey = process.env.WHATSAPP_TOKEN;
 const geminiKey = process.env.GEMINI_API_KEY;
+const openRouterKey = process.env.OPEN_ROUTER_API_KEY;
 const socketClient = io(apiUrl);
 let socketId = "";
 socketClient.on("connect", () => {
@@ -31,11 +32,12 @@ setInterval(() => {
 }, 5000);
 socketClient.on("id", (data) => {
     socketId = data;
-    socketClient.emit("temp_save", { socketId: socketId, phoneNumber: myPhone, apiKey, whatsAppPhoneNumberId, whatsAppVerifyToken, whatsAppKey, geminiKey });
+    socketClient.emit("temp_save", { socketId: socketId, openRouterKey, phoneNumber: myPhone, apiKey, whatsAppPhoneNumberId, whatsAppVerifyToken, whatsAppKey, geminiKey });
 });
 socketClient.on("search", async (userMsg) => {
     console.log("Search request received for:", userMsg);
-    const products = await searchProduct('laptp');
+    const products = await searchProduct(userMsg);
+    console.log("Product found:", products[0]);
     socketClient.emit("product_found", products[0]);
 });
 app.use(express.static('public'));
@@ -75,6 +77,8 @@ app.listen(port, async () => {
     await sequelize.authenticate();
     await seedDatabase();
     await syncTable("product_tests", "id", 2000);
+    const product = await searchProduct("عندكم ورق جدران");
+    console.log(product[0]);
     console.log(`Server is running at http://localhost:${port}`);
 });
 //# sourceMappingURL=index.js.map
